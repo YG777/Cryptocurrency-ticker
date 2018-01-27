@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import './Tickers.css';
 import Cryptocurrency from './Cryptocurrency';
-
-
+import axios from 'axios';
 class Tickers extends Component {
     constructor(props){    
     super(props);
-    //this object partly contains stuff from cyptocurrency component
+    //this object partly contains some propetries of cyptocurrency component
         this.state = {
             data: [
                 {
@@ -38,6 +37,23 @@ class Tickers extends Component {
                 }
             ]
         }
+    }
+
+    componentDidMount() {
+        this.fetchCriptocurrencyData();
+        this.interval = setInterval(() => this.fetchCryptocurrencyData(), 10 * 1000);
+    }
+
+
+    //make API call 4 data, axios has to be installed for this
+    fetchCryptocurrencyData() {
+        axios.get("https://api.coinmarketcap.com/v1/ticker/")
+            .then(response => {
+                var wanted = ["bitcoin", "ethereum", "litecoin"];
+                var result = response.data.filter(currency => wanted.includes(currency.id));
+                this.setState({ data: result});
+            })
+            .catch(err => console.log(err));
     }
 
     render() {
